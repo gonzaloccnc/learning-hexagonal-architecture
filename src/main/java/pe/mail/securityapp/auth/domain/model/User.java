@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -30,6 +31,12 @@ public class User implements UserDetails {
 
   @Column(unique = true)
   private String phone;
+
+  @Column @ColumnDefault("false")
+  private boolean isVerify;
+
+  @Column(length = 6)
+  private String verificationCode;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

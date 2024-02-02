@@ -9,6 +9,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import pe.mail.securityapp.auth.domain.exception.InvalidVerificationCode;
+import pe.mail.securityapp.auth.domain.exception.UnverifiedException;
+import pe.mail.securityapp.auth.domain.exception.VerificationAlreadyUsed;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +24,31 @@ public class AuthControllerAdvice {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<?> violationConstraint(MethodArgumentNotValidException ex) {
-    // make the return apiResponse
     return ResponseEntity.status(400).body(getErrors(ex.getBindingResult()));
+  }
+
+  @ExceptionHandler(InvalidVerificationCode.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ResponseEntity<?> invalidCode(InvalidVerificationCode ex) {
+    var map = new HashMap<String, String>();
+    map.put("error", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+  }
+
+  @ExceptionHandler(VerificationAlreadyUsed.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ResponseEntity<?> verificationUsed(VerificationAlreadyUsed ex) {
+    var map = new HashMap<String, String>();
+    map.put("error", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+  }
+
+  @ExceptionHandler(UnverifiedException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public ResponseEntity<?> unverified(UnverifiedException ex) {
+    var map = new HashMap<String, String>();
+    map.put("error", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
   }
 
   @ExceptionHandler(SignatureException.class)
